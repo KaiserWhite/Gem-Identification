@@ -1,8 +1,9 @@
-"""Command-line interface for the gem identification and cutting workflow."""
+"""Command-line and GUI entry points for the gem identification workflow."""
 from __future__ import annotations
 
+import argparse
 import random
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 from core import (
     CUTTING_CAP_SP,
@@ -279,7 +280,7 @@ def display_batch_summary(batch_result) -> None:
             print(f"  Gem {rec.index:>2} — {rec.plan.name}: Ruined{note}")
 
 
-def main() -> None:
+def run_cli() -> None:
     rng = random.Random()
     retainer = RetainerState()
 
@@ -382,6 +383,22 @@ def main() -> None:
         if cont == "q":
             print("Goodbye!")
             break
+
+
+def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Gem identification workflow")
+    parser.add_argument("--gui", action="store_true", help="Launch the Tkinter GUI instead of the CLI")
+    return parser.parse_args(argv)
+
+
+def main(argv: Optional[List[str]] = None) -> None:
+    args = parse_args(argv)
+    if args.gui:
+        from gui import run as run_gui
+
+        run_gui()
+    else:
+        run_cli()
 
 
 if __name__ == "__main__":
